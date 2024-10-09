@@ -1,20 +1,37 @@
 body {
-    background-color: darkcyan;
+    background-color: black;
+    color: white;
 }
 
 #content {
+    display: flex;
+    flex-direction: column;
     margin: auto;
     max-width: 600px;
-    min-width: 200px;
+    min-width: 300px;
     align-items: center;
 }
 
+#button-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
 button {
-    width: 100%;
-    height: 100px;
-    background-color: burlywood;
+    height: 50px;
+    width: 300px;
+    background-color: black;
+    color: greenyellow;
+    border: greenyellow 2px solid;
+    border-radius: 5%;
     font-size: 2em;
     transition: 200ms;
+}
+
+button:disabled {
+    color: gray;
+    border-color: gray;
 }
 
 button:hover {
@@ -26,4 +43,20 @@ button:disabled:hover {
     cursor: default;
     font-size: 2em;
     transition: 200ms;
+}
+
+#status-table {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.status-container {
+    display: flex;
+    justify-content: space-between;
+    width: 300px;
+}
+
+#success-text {
+    color: greenyellow;
 }

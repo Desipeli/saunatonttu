@@ -3,7 +3,7 @@ Raspberry pico W project for controlling sauna stove remotely. Put the controlle
 # Components
 
 - Raspberry pico W ([datasheet](https://datasheets.raspberrypi.com/picow/pico-w-datasheet.pdf))
-- Power bank with usb A 5v 2a output
+- Power bank with usb A 5v (2a or more)  output
 - FEETECH Standard Servo FS5106B
 - Raspberry pi 4 case fan (AD0205MX-K59)
 - Terminal blocks (3 and 5)
