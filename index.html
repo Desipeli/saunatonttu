@@ -33,6 +33,8 @@
   </body>
 
   <script>
+    const basePath = "/sauna";
+
     document.addEventListener("DOMContentLoaded", () => {
       const btnTurn = document.getElementById("btn-turn");
       const kiuasState = document.getElementById("status");
@@ -46,7 +48,7 @@
 
       async function getTimes() {
         try {
-          const res = await fetch("/api/times", {
+          const res = await fetch(`${basePath}/api/times`, {
             method: "GET",
             headers: {
               "Content-Type": "application/json; charset=UTF-8",
@@ -76,7 +78,7 @@
 
       async function getState() {
         try {
-          const res = await fetch("/api/status", {
+          const res = await fetch(`${basePath}/api/status`, {
             method: "GET",
             headers: {
               "Content-Type": "application/json; charset=UTF-8",
@@ -126,7 +128,7 @@
 
       async function turnServo() {
         try {
-          const res = await fetch("/api/turn", {
+          const res = await fetch(`${basePath}/api/turn`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json; charset=UTF-8",

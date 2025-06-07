@@ -1,17 +1,27 @@
-Raspberry pico W project for controlling sauna stove remotely. Put the controller behind a proxy server if used from outside of the local network!
+# Saunatonttu
+
+Raspberry pico W project for controlling sauna stove remotely.
 
 # Components
 
 - Raspberry pico W ([datasheet](https://datasheets.raspberrypi.com/picow/pico-w-datasheet.pdf))
-- 4 Ni-MH AA 1.2 V batteries with case.
+- 4 Ni-MH AA 1.2 V batteries connected in series with case.
 - FEETECH Standard Servo FS5106B
 - Terminal blocks (3 and 5)
-- USB cable 2.0 Type-A male to 2 x open wires
 - Jumper wires
+    - 3 female to female
     - 4 x male to female
-    - 3 x male to male
+    - 2 x male to male
 
-# Diagram
+# Connections
+
+- VSYS: Power supply ~5V
+- GP16: OLED SDA
+- GP17: OLED SCL
+- GP28: Servo control signal
+- All components and Pico W share a common ground
+- Do NOT power components from the Pico’s 3.3V or 5V pins!
+
 
 # Setup with vscode
 
@@ -23,7 +33,7 @@ Raspberry pico W project for controlling sauna stove remotely. Put the controlle
 6. In vscode
     - install [MicroPico](https://marketplace.visualstudio.com/items?itemName=paulober.pico-w-go) extension
     - ctrl-shift P
-    - search and run MicroPico: Configure project
+    - search and run MicroPico: Initialize MicroPico Project
     - To test, press Run in the bottom of the vscode window
     - To upload the project, ctrl-shift P and run MicroPico: Upload project to Pico
 
