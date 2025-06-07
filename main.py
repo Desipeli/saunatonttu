@@ -1,4 +1,4 @@
-import uasyncio
+import asyncio
 import json
 import sys
 import temperature
@@ -31,14 +31,14 @@ class Main:
         
 
     async def run(self):
-        server = uasyncio.start_server(self.handle_request, '0.0.0.0', 80)
-        uasyncio.create_task(server)
-        uasyncio.create_task(self.check_temperature())
+        server = asyncio.start_server(self.handle_request, '0.0.0.0', 80)
+        asyncio.create_task(server)
+        asyncio.create_task(self.check_temperature())
         self.status = STATUS_READY
         self.display.write_line("Ready", 1, True)
         self.display.write_line(str(self.ip), 2)
         while True:
-            await uasyncio.sleep(0)
+            await asyncio.sleep(0)
             
 
     async def check_temperature(self):
@@ -53,7 +53,7 @@ class Main:
                 print(self.temp, self.internal_temp)
             except Exception as e:
                 print(e)
-            await uasyncio.sleep_ms(10000)
+            await asyncio.sleep(10)
 
     def load_files(self) -> tuple:
         page = open("index.html", "r")
@@ -71,7 +71,7 @@ class Main:
         try:
             self.display.write_line("Turning servo", 1, True)
             self.pwm.duty_ns(END)
-            await uasyncio.sleep_ms(3000)
+            await asyncio.sleep(3)
             self.pwm.duty_ns(RETURN)
             self.status = STATUS_WARMING
             self.display.write_line("Warming", 1, True)
@@ -112,7 +112,7 @@ class Main:
             }
         json_data = json.dumps(data)
         response += json_data.encode('utf-8')
-        uasyncio.create_task(self.shutdown())
+        asyncio.create_task(self.shutdown())
         writer.write(response)
         await writer.drain()
         await writer.wait_closed()
@@ -124,7 +124,7 @@ class Main:
         #     }
         # json_data = json.dumps(data)
         # response += json_data.encode('utf-8')
-        uasyncio.create_task(self.sauna_on())
+        asyncio.create_task(self.sauna_on())
         writer.write(response)
         await writer.drain()
         await writer.wait_closed()
@@ -178,7 +178,7 @@ class Main:
 
     async def shutdown(self):
         while self.status == STATUS_TURNING:
-            await uasyncio.sleep(0)
+            await asyncio.sleep(0)
         self.status = STATUS_SHUTTING_DOWN
         self.display.write_line("Shutting down",5)
         sleep(6)
@@ -188,9 +188,9 @@ class Main:
 if __name__ == "__main__":
     app = Main()
     try:
-        uasyncio.run(app.run())
+        asyncio.run(app.run())
     except Exception as e:
         print(e)
-        app.shutdown()
+        asyncio.run(app.shutdown())
     finally:
-        uasyncio.new_event_loop()
+        asyncio.new_event_loop()

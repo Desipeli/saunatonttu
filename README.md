@@ -17,7 +17,7 @@ Raspberry pico W project for controlling sauna stove remotely. Put the controlle
 
 1. Download project
 3. Download and flash [micropython](https://micropython.org/download/RPI_PICO_W/) for Pico W 
-4. Create `config.py` to root of the project
+4. Create `credentials.py` to root of the project
     - `SSID=<"WIFI_NAME">`
     - `PASSWORD=<"WIFI_PASSWORD">`
 6. In vscode
@@ -30,3 +30,7 @@ Raspberry pico W project for controlling sauna stove remotely. Put the controlle
 # How to use
 
 1. Navigate to ip address of the Pico with any web browser. Click the button to turn the servo.
+
+# How to boot pico w if bootsel is broken
+
+connect TP6 surface to ground

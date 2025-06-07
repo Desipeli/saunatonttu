@@ -9,7 +9,6 @@
     <body>
         <div id="content">
             <h1>Saunatonttu</h1>
-            <input type="password" id="secret" name="secret"></input>
             <div id="status-table">
                 <div class="status-container">
                     <span>Stove</span>
@@ -83,7 +82,6 @@
             try {
                 const res = await fetch("/api/turn", {
                     method: "POST",
-                    body: JSON.stringify({ secret: getSecret() }),
                     headers: {
                         "Content-Type": "application/json; charset=UTF-8"
                     }
