@@ -17,6 +17,7 @@ class Connection:
         self.display.write_line(self.ssid,2)
         tries = 5
         while not self.wlan.isconnected():
+            # self.display.write_line(f"tries left {tries}", 4, True)
             sleep(2)
             print(self.wlan.status())
             tries -= 1
@@ -28,5 +29,6 @@ class Connection:
                 return False
 
         self.ip = self.wlan.ifconfig()[0]
-        print("connected, ip:", self.ip)
+        self.display.clear_all()
+        self.display.write_line(self.ip,1)
         return True
