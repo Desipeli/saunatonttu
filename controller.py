@@ -1,10 +1,11 @@
-import asyncio
 import sys
+import asyncio
 import temperature
+from time import sleep, ticks_ms, ticks_diff  # type: ignore
 from machine import Pin, PWM
-from time import sleep, ticks_ms, ticks_diff # type: ignore
-from display import Display
 from config import START, RETURN, END, STATUS_SHUTTING_DOWN, STATUS_READY, STATUS_TURNING, STATUS_WARMING, STATUS_BOOTING, GP_SERVO
+from display import Display
+
 
 class Controller:
     def __init__(self, display: Display):
@@ -18,7 +19,7 @@ class Controller:
         self.__boot_time = ticks_ms()
         self.__first_activation_time = None
 
-        sleep(2) # wait for servo to settle
+        sleep(2)  # wait for servo to settle
         self.status = STATUS_READY
 
     async def sauna_on(self):
@@ -46,30 +47,31 @@ class Controller:
             except Exception as e:
                 print("Temp error", e)
             await asyncio.sleep(10)
-    
+
     async def display_times(self):
         while True:
-            hours_mins_from_start = self.calculate_display_time(ticks_diff(ticks_ms(), self.__boot_time))
+            hours_mins_from_start = self.calculate_display_time(
+                ticks_diff(ticks_ms(), self.__boot_time))
             hours_mins_from_first_activation = ""
             if self.__first_activation_time:
-                hours_mins_from_first_activation = self.calculate_display_time(ticks_diff(ticks_ms(), self.__first_activation_time))
-            self.__display.set_footer(f"{hours_mins_from_start}      {hours_mins_from_first_activation}")
+                hours_mins_from_first_activation = self.calculate_display_time(
+                    ticks_diff(ticks_ms(), self.__first_activation_time))
+            self.__display.set_footer(
+                f"{hours_mins_from_start}      {hours_mins_from_first_activation}")
             await asyncio.sleep(60)
-                
 
     async def shutdown(self):
         while self.status == STATUS_TURNING:
             await asyncio.sleep(0)
         self.status = STATUS_SHUTTING_DOWN
-        self.__display.write_line("Shutting down",5)
+        self.__display.write_line("Shutting down", 5)
         sleep(6)
         self.__display.off()
         sys.exit()
-
 
     def calculate_display_time(self, milliseconds: int) -> str:
         seconds = milliseconds // 1000
         minutes = (seconds % 3600) // 60
         hours = seconds // 3600
 
-        return f"{hours:02d}:{minutes:02d}" # no room for seconds in the display :(
+        return f"{hours:02d}:{minutes:02d}"  # no room for seconds in the display :(

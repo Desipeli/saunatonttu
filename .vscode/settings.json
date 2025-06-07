@@ -15,5 +15,9 @@
         "~\\.micropico-stubs\\included",
         "~/.micropico-stubs/included"
     ],
-    "python.terminal.activateEnvironment": false
+    "python.terminal.activateEnvironment": false,
+    "[python]": {
+    "editor.defaultFormatter": "ms-python.autopep8",
+    "editor.formatOnSave": true
+  }
 }

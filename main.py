@@ -1,9 +1,10 @@
 import asyncio
-from display import Display
 from connection import Connection
 from controller import Controller
 from credentials import SSID, PASSWORD
+from display import Display
 from server import Server
+
 
 async def main():
     display = Display()

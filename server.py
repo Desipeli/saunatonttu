@@ -1,7 +1,8 @@
 import asyncio
 import json
-from controller import Controller
 import temperature
+from controller import Controller
+
 
 class Server:
     def __init__(self, controller: Controller):
@@ -30,7 +31,7 @@ class Server:
             method, path, _ = request_line.decode().split()
             headers_end = raw_request.find(b'\r\n\r\n')
             body = raw_request[headers_end + 4:] if headers_end != -1 else b''
-            
+
             json_body = None
             if method == "POST" and body:
                 try:
@@ -104,7 +105,8 @@ class Server:
 
     async def start(self):
         server = asyncio.start_server(self.handle_request, '0.0.0.0', 80)
-        asyncio.create_task(server) # serve_forever did not work for some reason.
+        # serve_forever did not work for some reason.
+        asyncio.create_task(server)
 
         while True:
             await asyncio.sleep(0)
