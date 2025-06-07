@@ -17,73 +17,98 @@
                 </div>
             </div>
             <div id="button-container">
-                <button id="btn-turn" onclick ="turnServo()" disabled>Start</button>
+                <button id="btn-turn" disabled>Start</button>
             </div>
         </div>
 
     </body>
 
-    <script>
-        const btnTurn = document.getElementById('btn-turn')
-        getState()
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const btnTurn = document.getElementById('btn-turn');
+        const kiuasState = document.getElementById("status");
 
-        function getState() {
-            const kiuasState = document.getElementById("status")
-            fetch(window.location.pathname+"/status", {
-                method: "GET",
-                headers: {
-                    "content-type": "application/json; charset=UTF-8"
-                }
-            })
-                .then(res => res.json())
-                .then((data) => {
-                    console.log(`data ${data}`)
-                    console.log(`status ${data["status"]}`)
-                    if (data["status"] === -1) {
-                        kiuasState.innerText = "Shutting down"
-                        btnTurn.disabled = true
-                    } else if (data["status"]  === 0) {
-                        kiuasState.innerText = "Not ready"
-                        btnTurn.disabled = true
-                    } else if (data["status"] === 1) {
-                        kiuasState.innerText = "Ready"
-                        btnTurn.disabled = false 
-                    } else if (data["status"] === 2) {
-                        kiuasState.innerText = "Turning..."
-                        btnTurn.disabled = true
-                    } else if (data["status"] === 3) {
-                        kiuasState.innerText = "Activated"
-                        kiuasState.classList.add("success-text")
-                        btnTurn.disabled = false
+        btnTurn.addEventListener("click", async () => {
+            await turnServo();
+        });
+
+        async function getState() {
+            try {
+                const res = await fetch("/api/status", {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json; charset=UTF-8"
                     }
-                })
-        } 
+                });
 
-        const turnServo = () => {
-            console.log("TURN")
-            fetch(window.location.pathname, {
-                method: "POST",
-                body: JSON.stringify({
-                    servo: "turn",
-                    secret: getSecret()
-                }),
-                headers: {
-                    "content-type": "application/json; charset=UTF-8"
+                const data = await res.json();
+                console.log("data:", data);
+
+                kiuasState.classList.remove("success-text");
+
+                switch (data.status) {
+                    case -1:
+                        kiuasState.innerText = "Shutting down";
+                        btnTurn.disabled = true;
+                        break;
+                    case 0:
+                        kiuasState.innerText = "Not ready";
+                        btnTurn.disabled = true;
+                        break;
+                    case 1:
+                        kiuasState.innerText = "Ready";
+                        btnTurn.disabled = false;
+                        break;
+                    case 2:
+                        kiuasState.innerText = "Turning...";
+                        btnTurn.disabled = true;
+                        break;
+                    case 3:
+                        kiuasState.innerText = "Activated";
+                        kiuasState.classList.add("success-text");
+                        btnTurn.disabled = false;
+                        break;
+                    default:
+                        kiuasState.innerText = "Unknown";
+                        btnTurn.disabled = true;
                 }
-            })
-                .then((res) => {
-                    if (!res.ok) {
-                        console.log(res.status)
-                    } else {
-                        btnTurn.disabled = true
-                    }
-                })
-
-                getState()
+            } catch (error) {
+                console.error("Error fetching status:", error);
+                kiuasState.innerText = "Error";
+                btnTurn.disabled = true;
             }
+        }
+
+        async function turnServo() {
+            try {
+                const res = await fetch("/api/turn", {
+                    method: "POST",
+                    body: JSON.stringify({ secret: getSecret() }),
+                    headers: {
+                        "Content-Type": "application/json; charset=UTF-8"
+                    }
+                });
+
+                if (!res.ok) {
+                    console.log("Turn failed, status:", res.status);
+                    return;
+                }
+
+                btnTurn.disabled = true;
+                setTimeout(getState, 500);
+            } catch (error) {
+                console.error("Error turning sauna:", error);
+            }
+        }
 
         function getSecret() {
-            return document.getElementById("secret").value
+            return document.getElementById("secret").value;
         }
-    </script>
+
+        getState();
+        setInterval(getState, 3000);
+    });
+</script>
+
+
 </html>
