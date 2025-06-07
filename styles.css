@@ -57,6 +57,14 @@ button:disabled:hover {
     width: 300px;
 }
 
-#success-text {
+.success-text {
     color: greenyellow;
+}
+
+.warning-text {
+    color: yellow;
+}
+
+.error-text {
+    color: red;
 }

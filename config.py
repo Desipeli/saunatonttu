@@ -14,3 +14,7 @@ STATUS_TURNING = 2
 STATUS_WARMING = 3
 
 GP_SERVO = Pin(28)
+
+# Display pins for oled should not be changed
+# scl = Pin(17)
+# sda = Pin(16)

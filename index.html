@@ -1,112 +1,166 @@
-
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Sauna</title>
-        <meta charset="UTF-8">
-        <link rel="stylesheet" href="styles.css">
-    </head>
-    <body>
-        <div id="content">
-            <h1>Saunatonttu</h1>
-            <div id="status-table">
-                <div class="status-container">
-                    <span>Stove</span>
-                    <span id="status">Initializing...</span>
-                </div>
-            </div>
-            <div id="button-container">
-                <button id="btn-turn" disabled>Start</button>
-            </div>
+  <head>
+    <title>Sauna</title>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div id="content">
+      <h1>Saunatonttu</h1>
+      <div id="status-table">
+        <div class="status-container">
+          <span>Stove</span>
+          <span id="status">Initializing...</span>
         </div>
+        <div class="status-container">
+          <span>Uptime</span>
+          <span id="uptime">null</span>
+        </div>
+        <div class="status-container">
+          <span>Since First</span>
+          <span id="since-first">null</span>
+        </div>
+        <div class="status-container">
+          <span>Since Latest</span>
+          <span id="since-latest">null</span>
+        </div>
+      </div>
+      <div id="button-container">
+        <button id="btn-turn" disabled>Start</button>
+      </div>
+    </div>
+  </body>
 
-    </body>
-
-<script>
+  <script>
     document.addEventListener("DOMContentLoaded", () => {
-        const btnTurn = document.getElementById('btn-turn');
-        const kiuasState = document.getElementById("status");
+      const btnTurn = document.getElementById("btn-turn");
+      const kiuasState = document.getElementById("status");
+      const uptime = document.getElementById("uptime");
+      const sinceFirst = document.getElementById("since-first");
+      const sinceLatest = document.getElementById("since-latest");
 
-        btnTurn.addEventListener("click", async () => {
-            await turnServo();
-        });
+      btnTurn.addEventListener("click", async () => {
+        await turnServo();
+      });
 
-        async function getState() {
-            try {
-                const res = await fetch("/api/status", {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json; charset=UTF-8"
-                    }
-                });
+      async function getTimes() {
+        try {
+          const res = await fetch("/api/times", {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json; charset=UTF-8",
+            },
+          });
 
-                const data = await res.json();
-                console.log("data:", data);
+          const data = await res.json();
+          console.log("times", data);
 
-                kiuasState.classList.remove("success-text");
+          if (data && data.uptime) {
+            uptime.textContent = data.uptime;
+          } else {
+            uptime.textContent = "Missing";
+          }
 
-                switch (data.status) {
-                    case -1:
-                        kiuasState.innerText = "Shutting down";
-                        btnTurn.disabled = true;
-                        break;
-                    case 0:
-                        kiuasState.innerText = "Not ready";
-                        btnTurn.disabled = true;
-                        break;
-                    case 1:
-                        kiuasState.innerText = "Ready";
-                        btnTurn.disabled = false;
-                        break;
-                    case 2:
-                        kiuasState.innerText = "Turning...";
-                        btnTurn.disabled = true;
-                        break;
-                    case 3:
-                        kiuasState.innerText = "Activated";
-                        kiuasState.classList.add("success-text");
-                        btnTurn.disabled = false;
-                        break;
-                    default:
-                        kiuasState.innerText = "Unknown";
-                        btnTurn.disabled = true;
-                }
-            } catch (error) {
-                console.error("Error fetching status:", error);
-                kiuasState.innerText = "Error";
-                btnTurn.disabled = true;
-            }
+          if (data && data.sinceFirst) {
+            sinceFirst.textContent = data.sinceFirst;
+          }
+
+          if (data && data.sinceLatest) {
+            sinceLatest.textContent = data.sinceLatest;
+          }
+        } catch (error) {
+          console.error("Error fetching times:", error);
         }
+      }
 
-        async function turnServo() {
-            try {
-                const res = await fetch("/api/turn", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json; charset=UTF-8"
-                    }
-                });
+      async function getState() {
+        try {
+          const res = await fetch("/api/status", {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json; charset=UTF-8",
+            },
+          });
 
-                if (!res.ok) {
-                    console.log("Turn failed, status:", res.status);
-                    return;
-                }
+          const data = await res.json();
+          console.log("status:", data);
 
-                btnTurn.disabled = true;
-                setTimeout(getState, 500);
-            } catch (error) {
-                console.error("Error turning sauna:", error);
-            }
+          kiuasState.classList.remove("success-text");
+          kiuasState.classList.remove("warning-text");
+
+          switch (data.status) {
+            case -1:
+              kiuasState.innerText = "Shutting down";
+              btnTurn.disabled = true;
+              break;
+            case 0:
+              kiuasState.innerText = "Not ready";
+              btnTurn.disabled = true;
+              break;
+            case 1:
+              kiuasState.innerText = "Ready";
+              kiuasState.classList.add("success-text");
+              btnTurn.disabled = false;
+              break;
+            case 2:
+              kiuasState.innerText = "Turning...";
+              btnTurn.disabled = true;
+              break;
+            case 3:
+              kiuasState.innerText = "Activated";
+              kiuasState.classList.add("warning-text");
+              btnTurn.disabled = false;
+              break;
+            default:
+              kiuasState.innerText = "Unknown";
+              btnTurn.disabled = true;
+          }
+        } catch (error) {
+          console.error("Error fetching status:", error);
+          kiuasState.innerText = "Error";
+          kiuasState.classList.add("error-text");
+          btnTurn.disabled = true;
         }
+      }
 
-        function getSecret() {
-            return document.getElementById("secret").value;
+      async function turnServo() {
+        try {
+          const res = await fetch("/api/turn", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json; charset=UTF-8",
+            },
+          });
+
+          if (!res.ok) {
+            console.log("Turn failed, status:", res.status);
+            return;
+          }
+
+          btnTurn.disabled = true;
+          setTimeout(getState, 500);
+        } catch (error) {
+          console.error("Error turning sauna:", error);
         }
+      }
 
-        getState();
-        setInterval(getState, 3000);
+      function getSecret() {
+        return document.getElementById("secret").value;
+      }
+
+      async function updateStateLoop() {
+        await getState();
+        setTimeout(updateStateLoop, 3000);
+      }
+
+      async function updateTimesLoop() {
+        await getTimes();
+        setTimeout(updateTimesLoop, 3000);
+      }
+
+      updateStateLoop();
+      updateTimesLoop();
     });
-</script>
-
-
+  </script>
 </html>
