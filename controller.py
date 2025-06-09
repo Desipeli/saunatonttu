@@ -13,6 +13,7 @@ class Controller:
         self.__pwm = PWM(Pin(GP_SERVO))
         self.__pwm.freq(50)
         self.__pwm.duty_ns(START)
+        sleep(2)
 
         self.__internal_temp = 0
         self.__display = display
@@ -20,14 +21,20 @@ class Controller:
         self.__first_activation_time = None
         self.__latest_activation_time = None
 
-        sleep(2)  # wait for servo to settle
         self.__status = STATUS_READY
+
+    async def reinitialize_servo(self):
+        self.__pwm = PWM(Pin(GP_SERVO))
+        self.__pwm.freq(50)
+        self.__pwm.duty_ns(START)
+        # await asyncio.sleep(2)
 
     async def sauna_on(self):
         if self.__status not in [STATUS_READY, STATUS_WARMING]:
             return
-        self.__status = STATUS_TURNING
         try:
+            await self.reinitialize_servo()
+            self.__status = STATUS_TURNING
             if not self.__first_activation_time:
                 self.__first_activation_time = ticks_ms()
             self.__latest_activation_time = ticks_ms()
@@ -35,17 +42,18 @@ class Controller:
             self.__pwm.duty_ns(END)
             await asyncio.sleep(3)
             self.__pwm.duty_ns(RETURN)
+            await asyncio.sleep(3)
+            self.__pwm.deinit()
             self.__status = STATUS_WARMING
             self.__display.write_line("Warming", 1)
         except Exception as e:
             print(e)
 
-    async def check_temperature(self):
+    async def display_temperature(self):
         while True:
             try:
                 self.__internal_temp = temperature.read_temp()
                 self.__display.set_header(f"{self.__internal_temp} C")
-                print(self.__internal_temp)
             except Exception as e:
                 print("Temp error", e)
             await asyncio.sleep(10)
@@ -77,10 +85,10 @@ class Controller:
         hours = seconds // 3600
 
         # no room for seconds in the display :(
-        formatted_string = f"{hours:02d}:{minutes:02d}"
+        formatted_string = f"{hours}h {minutes}m"
         if include_seconds:
             seconds = seconds % 60
-            formatted_string = f"{formatted_string}:{seconds:02d}"
+            formatted_string = f"{formatted_string} {seconds}s"
         return formatted_string
 
     def get_status(self) -> int:
@@ -88,16 +96,16 @@ class Controller:
 
     def get_uptime(self) -> str:
         diff = ticks_diff(ticks_ms(), self.__uptime)
-        return self.__calculate_display_time(diff, True)
+        return self.__calculate_display_time(diff)
 
     def get_time_from_first_activation(self) -> str:
         if not self.__first_activation_time:
             return "not activated"
         diff = ticks_diff(ticks_ms(), self.__first_activation_time)
-        return self.__calculate_display_time(diff, True)
+        return self.__calculate_display_time(diff)
 
     def get_time_from_latest_activation(self) -> str:
         if not self.__latest_activation_time:
             return "not activated"
         diff = ticks_diff(ticks_ms(), self.__latest_activation_time)
-        return self.__calculate_display_time(diff, True)
+        return self.__calculate_display_time(diff)

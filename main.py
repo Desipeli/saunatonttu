@@ -20,7 +20,7 @@ async def main():
 
     await asyncio.gather(
         server.start(),
-        controller.check_temperature(),
+        controller.display_temperature(),
         controller.display_times()
     )
 

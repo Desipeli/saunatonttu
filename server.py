@@ -72,7 +72,10 @@ class Server:
         response = b'HTTP/1.0 200 OK\r\nContent-Type: application/json\r\n\r\n'
         data = {
             "internal_temperature": temperature.read_temp(),
-            "status": self.controller.get_status()
+            "status": self.controller.get_status(),
+            "uptime": self.controller.get_uptime(),
+            "sinceFirst": self.controller.get_time_from_first_activation(),
+            "sinceLatest": self.controller.get_time_from_latest_activation(),
         }
         json_data = json.dumps(data)
         response += json_data.encode('utf-8')

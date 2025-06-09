@@ -9,7 +9,7 @@ Raspberry pico W project for controlling sauna stove remotely.
 - FEETECH Standard Servo FS5106B
 - Terminal blocks (3 and 5)
 - Jumper wires
-    - 3 female to female
+    - 3 x female to female
     - 4 x male to female
     - 2 x male to male
 
