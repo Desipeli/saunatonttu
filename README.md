@@ -7,6 +7,7 @@ Raspberry pico W project for controlling sauna stove remotely.
 - Raspberry pico W ([datasheet](https://datasheets.raspberrypi.com/picow/pico-w-datasheet.pdf))
 - 4 Ni-MH AA 1.2 V batteries connected in series with case.
 - FEETECH Standard Servo FS5106B
+- OLED screen 128x64 I2C 
 - Terminal blocks (3 and 5)
 - Jumper wires
     - 3 x female to female

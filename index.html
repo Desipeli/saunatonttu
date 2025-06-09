@@ -133,10 +133,6 @@
         }
       }
 
-      function getSecret() {
-        return document.getElementById("secret").value;
-      }
-
       async function updateStatusLoop() {
         await getStatus();
         setTimeout(updateStatusLoop, 60000);

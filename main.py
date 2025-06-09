@@ -24,7 +24,6 @@ async def main():
         controller.display_times()
     )
 
-    display.write_line("main ended", 6)
     display.off()
 
 
